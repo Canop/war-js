@@ -1,23 +1,145 @@
+/*
+ * Three.css.js 
+ * (C) - Abhishek Hingnikar
+ * This product is freely distrubuted under MIT licence
+ * Attribution Required.
+ * Three is a library to provide 2d css a little bit 3d touch 
+ * for games and stuff.
+ */
+
 window.three = function(id,xWid,yWid,res,noSun) {
 	'use strict';
+	var PI = Math.PI;
+	function toDegree(rad){
+		return (rad*180)/PI;
+	}
+	function jstransform(){
+		var self = this;
+		var rotateX = 0,
+			rotateY = 0,
+			rotateZ = 0,
+			translateX = 0,
+			translateY = 0,
+			translateZ = 0;
+		this.getString = function(){
+			var str = ' translateX(';
+			str += translateX + 'px) translateY(';
+			str += translateY + 'px) translateZ(';
+			str += translateZ + 'px) rotateX(';
+			str += rotateX + 'deg) rotateY(';
+			str += rotateY + 'deg) rotateZ(';
+			str += rotateZ + 'deg)';
+			return str;
+		}
+		this.setRot = function(rX,rY,rZ){
+			if( rX != undefined && rX != null){
+				rotateX = rX;
+			}
+			if( rY != undefined && rY != null){
+				rotateY = rY;	
+			}
+			if( rZ != undefined && rZ != null){
+				rotateZ = rZ;
+			}
+			return self;
+		}
+		this.Rotate = function(dRX,dRY,dRZ){
+			if( dRX != undefined && dRX != null){
+				rotateX += dRX;
+			}
+			if( dRY != undefined && dRY != null){
+				rotateY += dRY;
+			}
+			if( dRZ != undefined && dRZ != null){
+				rotateZ += dRZ;
+			}
+			return self;
+		}
+		
+		this.move  = function(dx,dy,dz){
+			if( dx != undefined && dx != null){
+				translateX += dx;	
+			}
+			if( dy != undefined && dy != null){
+				translateY += dy;
+			}
+			if( dz != undefined && dz != null){
+				translateZ += dz;
+			}
+			return self;
+		}
+		this.setPos = function(x,y,z){
+			if( x != undefined && x != null){
+				translateX = x;	
+			}
+			if( y != undefined && y != null){
+				translateY = y;
+			}
+			if( z != undefined && z != null){
+				translateZ = z;
+			}
+			return self;
+		}
+	}
 	var world = document.getElementById(id),
 	objects = [],
 	lights  = [],
 	terrain = world.getElementsByClassName('terrian')[0],
 	xWidth  = xWid,
 	yWidth  = yWid,
+	// The resolution of terrain
 	resolution = res,
-	gCam    = {
-		rotateX:60,
-		rotateY:0,
-		rotateZ:0,
-		translateX:0,
-		translateY:0,
-		translateZ:-100
-	}; // The resolution of terrain
-	
-	this.AddObject = function( domNode , properties ) {
+	gCam  = new jstransform(); 
+	this.create3dObject = function(){
+	 	var xPos = 0,
+	 		yPos = 0,
+	 		transforms = new jstransform(),
+	 		domNode = document.createElement('div');
+	 		domNode.className += ' object';
+	 		world.appendChild(domNode);
+	 	// This adds changes	
+	 	function render(){
+	 		// The x , y are so because to save :hover :P
+	 		domNode.style.left = xPos + 'px';
+	 		domNode.style.top  = yPos + 'px';
+	 		domNode.style.webkitTransform  = transforms.getString();
+	 	};
+	 	this.Rotate = function(dRX,dRY,dRZ){
+	 		transforms.Rotate(dRX,dRY,dRZ);
+	 		render();
+	 	}
+	 	this.move   = function(dx,dy,dz){
+	 		if( dx != undefined )
+	 		xPos += dx;
+			if( dy != undefined )	 	
+	 		yPos += dy;
+	 		if( dz != undefined )
+	 		transforms.move(0,0,dz);
+	 		
+	 		render();
+	 	}	 	
+	 	this.setPos = function(x,y,z){
+	 		transforms.move(x,y,z);
+	 		render();
+	 	}
+	 	this.setRot = function(rX,rY,rZ){
+	 		transforms.setRot(rX,rY,rZ);
+	 		render();
+	 	}
+	 	this.pointToXY = function(x,y){
+	 		var dx  = x - xPos,
+	 			dy =  y - yPos,
+	 			angle = toDegree(Math.atan2(dy,dx));
+	 			//console.log("rot:",angle);
+	 			transforms.setRot(0,0,angle);
+	 			render();
+	 	}
+	 	render();
 	};
+	this.AddObject = function( object , properties ) {
+		
+	};
+	// 2d. results
 	this.AddLight  = function(x,y,z,color,brightness) {
 		lights.push({
 			x:x,
@@ -53,59 +175,16 @@ window.three = function(id,xWid,yWid,res,noSun) {
 	}
 
 	this.createMap   = function ( terrain_type ) {
-		var tPatch =  document.createElement('li');
-		tPatch.className += ' tile ';
-		tPatch.className += terrain_type;
-		tPatch.style.height = tPatch.style.width = resolution + 'px';
-
-		var map_z = []
-		,tempNode,
-		xMax = Math.ceil(xWidth/resolution),
-		yMax = Math.ceil(yWidth/resolution);
-		for( var i = 0; i < yMax ; i++ ) {
-			map_z[i] = [];
-			for( var j= 0; j < xMax ; j++ ) {
-				tempNode = tPatch.cloneNode();
-				/* okay fixing it only in 1 axis now */
-
-				var z = (map_z[0][j]===undefined)?(( Math.random()*10 )- 5): (map_z[0][j]);
-				map_z[i][j] = z;
-
-				if( map_z[i][j-1] != undefined && map_z[i][j-1] !== z ) {
-					var dz = map_z[i][j-1] - z,
-					slop = dz/resolution,
-					ln = Math.sqrt(dz*dz + resolution*resolution),
-					scale = ln/resolution;
-					z += dz/2;
-					var angle = Math.atan2(dz,resolution);
-					tempNode.style.webkitTransform = 'scaleX('+scale+') rotateY( '+ angle +'rad)';
-				}
-				tempNode.style.left = j*resolution+'px';
-				tempNode.style.top  = i*resolution+'px';
-				tempNode.style.webkitTransform += ' translateZ('+z+'px)';
-				terrain.appendChild(tempNode);
-			}
-		}
+		/* finish this */
+		terrain.style.width = xWidth;
+		terrain.style.height = yWidth;
 	};
 	function updateCam(){
-		var str = ' translateX(';
-			str += gCam.translateX + 'px) translateY(';
-			str += gCam.translateY + 'px) translateZ(';
-			str += gCam.translateZ + 'px) rotateX(';
-			str += gCam.rotateX + 'deg) rotateY(';
-			str += gCam.rotateY + 'deg) rotateZ(';
-			str += gCam.rotateZ + 'deg)';
-			console.log(str);
-		terrain.style.webkitTransform = str;
+			terrain.style.webkitTransform = gCam.getString();
 	}
 	
 	this.gMove = function(dx,dy,dz){
-		if(dx)
-		gCam.translateX += dx;
-		if(dy)
-		gCam.translateY += dy;
-		if(dz)
-		gCam.translateZ += dz;
-		updateCam();
+	 gCam.move(dx,dy,dz);
+	 updateCam();
 	};
 };

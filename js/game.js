@@ -1,7 +1,7 @@
 // The whole game is in herei
 window.onload = function() {
 	'use strict';
-	
+
 	Event.prototype.overkill = function() {
 		this.stopPropagation();
 		this.preventDefault();
@@ -11,7 +11,7 @@ window.onload = function() {
 	var enviro = new three('war',1200,600,50);
 	enviro.createMap('sand');
 
-	var players = [],
+	var player = new enviro.create3dObject(),
 	objects = [],
 	map     = [], // Map is an array
 	waypoints = [],
@@ -28,75 +28,85 @@ window.onload = function() {
 		"DOWNARROW":39,
 		"RIGHTARROW":40
 	};
-	function makeAction(name){
+	function makeAction(name) {
 		actions[name] = {
 			active:false,
 			bindedTo:null,
 			binded:false
 		};
 	}
+
 	function handleKeyDown(e) {
-		if( keys[ e.keyCode ] != undefined ) {
-			actions[keys[e.keyCode ]].active = true;
+		if( keys[e.keyCode] !== undefined ) {
+			actions[keys[e.keyCode]].active = true;
 		}
 		return e.overkill();
 	};
 
 	function handleKeyUp(e) {
-		if( keys[ e.keyCode ] != undefined ) {
-			actions[keys[e.keyCode ]].active = false;
+		if( keys[e.keyCode] !== undefined ) {
+			actions[keys[e.keyCode]].active = false;
 		}
 		return e.overkill();
 	};
 
 	function handleMouseDown(e) {
-		if( mouse[e.button] != undefined ) {
+		if( mouse[e.button] !== undefined ) {
 			actions[mouse[e.button]].active = true;
 		}
 		return e.overkill();
 	};
 
 	function handleMouseUp(e) {
-		if( mouse[e.button] != undefined ) {
+		if( mouse[e.button] !== undefined ) {
 			actions[mouse[e.button]].active = false;
 		}
+		return e.overkill();
 	};
-	function unBindKey(code){
+	function handleMouseMove(e){
+		actions.mouseX = e.clientX;
+		actions.mouseY = e.clientY;
+		return e.overkill();
+	}
+
+	function unBindKey(code) {
 		keys[code] = undefined;
 	}
-	function unBindMouse(code){
+
+	function unBindMouse(code) {
 		mouse[code] = undefined;
 	}
 
 	function bindKey(key,action) {
-		if( actions[action] == undefined){
+		if( actions[action] === undefined) {
 			console.log("Action not defined");
 			return;
 		}
-		if( actions[action].binded == true){
+		if( actions[action].binded === true) {
 			unBindKey(actions[action].boundTo);
 		}
-		key = (special_keys[key] != undefined)?special_keys[key]: key.toUpperCase().charCodeAt(0);
+		key = (special_keys[key] !== undefined)? special_keys[key]: key.toUpperCase().charCodeAt(0);
 		actions[action].binded = true;
 		actions[action].bindedTo = 	key;
 		keys[key] = action;
 	};
 
 	function bindMouse(buttonCode,action) {
-		if( actions[action] == undefined){
+		if( actions[action] === undefined) {
 			console.log("Action not defined");
 			return;
 		}
-		if( actions[action].binded == true){
+		if( actions[action].binded === true) {
 			unBindKey(actions[action].boundTo);
 		}
 		actions[action].binded = true;
 		actions[action].bindedTo = buttonCode;
 		mouse[buttonCode] = action;
 	};
+
 	["shoot","secondary","walk_forward","walk_backward","strafe_left","strafe_right","activate","reload","primary","sidearm","meelee","crouch","dash",
 	"jump","pause"
-	].forEach(function(act){
+	].forEach( function(act) {
 		makeAction(act);
 	});
 	console.log(actions);
@@ -115,28 +125,31 @@ window.onload = function() {
 	bindKey('SHIFT',"dash");
 	bindKey(" ","jump");
 	bindKey("ESC","pause");
-	
-	function GameLoop(){
-		if( actions.shoot.active ){
 
+	function GameLoop() {
+		if( actions.shoot.active ) {
 		}
-		if( actions.walk_forward.active ){
-			enviro.gMove(0,0,10);
+		if( actions.walk_forward.active ) {
+			player.move(0,-10);
 		}
-		if( actions.walk_backward.active){
-			enviro.gMove(0,0,-10);
+		if( actions.walk_backward.active) {
+			player.move(0,10);
 		}
-		if( actions.strafe_left.active ){
-			enviro.gMove(-10,0,0);
+		if( actions.strafe_left.active ) {
+			player.move(-10);
 		}
-		if( actions.strafe_right.active){
-			enviro.gMove(10,0,0);
+		if( actions.strafe_right.active) {
+			player.move(10);
 		}
+		player.pointToXY(actions.mouseX,actions.mouseY);
+		
 		window.requestAnimationFrame( GameLoop );
 	};
+
 	GameLoop();
 	document.addEventListener('keydown',handleKeyDown);
 	document.addEventListener('keyup',handleKeyUp);
 	document.addEventListener('mousedown',handleMouseDown);
 	document.addEventListener('mouseup',handleMouseUp);
+	document.addEventListener('mousemove',handleMouseMove);
 };

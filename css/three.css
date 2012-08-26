@@ -21,8 +21,10 @@ body > div.world{
 
 
 .world .terrian{
+	display:block;
+	padding:0px;
+	margin:0px;
 	-webkit-transform-style:preserve-3d;
-	-webkit-transform:rotateX(60deg) translateZ(-100px);
 	position:absolute;
 	background:red;
 }
@@ -43,12 +45,20 @@ body > div.world{
 	outline:1px dotted red; /* wireframe on*/
 }
 
-.world .terrian .tile.sand{
+.world .terrian.sand{
 	background:url('../textures/sand.jpg');
 	background-size: 50px 50px;
 }
 
-.world .terrian .tile.dirt{
+.world .terrian.dirt{
 	background:url('../textures/dirt.jpg');
 	background-size: 50px 50px;
+}
+
+.world .object{
+	width:50px;
+	height:50px;
+	margin:-25px;
+	background:blue;
+	position:absolute;
 }
