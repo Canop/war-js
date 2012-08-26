@@ -21,12 +21,13 @@ window.three = function(id,xWid,yWid,res){
 		,tempNode,
 		xMax = Math.ceil(xWidth/resolution),
 		yMax = Math.ceil(yWidth/resolution);
-		for( var i = 0; i < 1 ; i++ ){
+		for( var i = 0; i < yMax ; i++ ){
 			map_z[i] = [];
 			for( var j= 0; j < xMax ; j++ ){
 				tempNode = tPatch.cloneNode();
 				/* okay fixing it only in 1 axis now */
-				var z = ( Math.random()*10 )- 5;
+				
+				var z = (map_z[0][j]===undefined)?(( Math.random()*10 )- 5): (map_z[0][j]);
 				map_z[i][j] = z;
 				
 				if( map_z[i][j-1] != undefined && map_z[i][j-1] !== z ){
@@ -36,7 +37,7 @@ window.three = function(id,xWid,yWid,res){
 						ln = Math.sqrt(dz*dz + resolution*resolution),
 						scale = ln/resolution;
 						z += dz/2;
-						var angle = Math.acos(1/scale);
+						var angle = Math.atan2(dz,resolution);
 						console.log( "Delta Z : ",dz,"slope : ",slop,"Assigned Z :",z);
 						tempNode.style.webkitTransform = 'scaleX('+scale+') rotateY( '+ angle +'rad)';	
 				}
