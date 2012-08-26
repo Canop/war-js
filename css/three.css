@@ -44,6 +44,11 @@ body > div.world{
 }
 
 .world .terrian .tile.sand{
-	background:url('../textures/sand.jpg') 50px 50px;
+	background:url('../textures/sand.jpg');
+	background-size: 50px 50px;
 }
 
+.world .terrian .tile.dirt{
+	background:url('../textures/dirt.jpg');
+	background-size: 50px 50px;
+}

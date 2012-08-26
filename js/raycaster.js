@@ -41,3 +41,4 @@ function rayCast(initx,inity,dir,sample,map){
 		d:Math.sqrt( dx*dx + dy*dy )
 	};
 }
+
