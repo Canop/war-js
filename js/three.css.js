@@ -6,8 +6,16 @@ window.three = function(id,xWid,yWid,res,noSun) {
 	terrain = world.getElementsByClassName('terrian')[0],
 	xWidth  = xWid,
 	yWidth  = yWid,
-	resolution = res; // The resolution of terrain
-
+	resolution = res,
+	gCam    = {
+		rotateX:60,
+		rotateY:0,
+		rotateZ:0,
+		translateX:0,
+		translateY:0,
+		translateZ:-100
+	}; // The resolution of terrain
+	
 	this.AddObject = function( domNode , properties ) {
 	};
 	this.AddLight  = function(x,y,z,color,brightness) {
@@ -79,7 +87,25 @@ window.three = function(id,xWid,yWid,res,noSun) {
 			}
 		}
 	};
+	function updateCam(){
+		var str = ' translateX(';
+			str += gCam.translateX + 'px) translateY(';
+			str += gCam.translateY + 'px) translateZ(';
+			str += gCam.translateZ + 'px) rotateX(';
+			str += gCam.rotateX + 'deg) rotateY(';
+			str += gCam.rotateY + 'deg) rotateZ(';
+			str += gCam.rotateZ + 'deg)';
+			console.log(str);
+		terrain.style.webkitTransform = str;
+	}
 	
-	
-	this.gMove = function(){};
+	this.gMove = function(dx,dy,dz){
+		if(dx)
+		gCam.translateX += dx;
+		if(dy)
+		gCam.translateY += dy;
+		if(dz)
+		gCam.translateZ += dz;
+		updateCam();
+	};
 };
