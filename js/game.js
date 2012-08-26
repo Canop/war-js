@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-(function(){
- 'use strict';
- var players = [],
-     objects = [],
-     map     = [], // Map is an array
-     waypoints = [];
-})();
-=======
 // The whole game is in herei
 window.onload = function() {
 	'use strict';
@@ -149,4 +140,3 @@ window.onload = function() {
 	document.addEventListener('mousedown',handleMouseDown);
 	document.addEventListener('mouseup',handleMouseUp);
 };
->>>>>>> master
