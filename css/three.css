@@ -1,0 +1,49 @@
+body,html,body>div.world{
+	padding:0px;
+	margin:0px;
+	width:100%;
+	height:100%;
+	background:#000;
+}
+
+
+body,body > div.world{
+	-webkit-perspective:800px;
+	-webkit-transition:-webkit-perspective 400ms;
+	-moz-perspective:800px;
+	-moz-transition:-moz-perspective 400ms;
+	overflow:hidden;
+}
+
+body > div.world{
+	position:absolute;
+}
+
+
+.world .terrian{
+	-webkit-transform-style:preserve-3d;
+	-webkit-transform:rotateX(60deg) translateZ(-100px);
+	position:absolute;
+	background:red;
+}
+
+.world .terrian .tile{
+	display:block;
+	list-style:none;
+	padding:0px;
+	margin:0px;
+	width:50px;
+	height:50px;
+	position:absolute;
+	-webkit-transform-style:preserve-3d;
+	-webkit-transform-origin:50% 50%;
+}
+
+.world.wireframe .terrian .tile{
+	outline:1px dotted red; /* wireframe on*/
+}
+
+.world .terrian .tile.sand{
+	background:url('../textures/sand.jpg') 50px 50px;
+}
+
