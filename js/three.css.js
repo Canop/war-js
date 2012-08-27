@@ -93,6 +93,7 @@ window.three = function(id,xWid,yWid,res,noSun) {
 	this.create3dObject = function(){
 	 	var xPos = 0,
 	 		yPos = 0,
+	 		parent=null,
 	 		transforms = new jstransform(),
 	 		domNode = document.createElement('div');
 	 		domNode.className += ' object';
@@ -104,6 +105,9 @@ window.three = function(id,xWid,yWid,res,noSun) {
 	 		domNode.style.top  = yPos + 'px';
 	 		domNode.style.webkitTransform  = transforms.getString();
 	 	};
+	 	this.registerParent = function(_parent){
+	 		parent = _parent;
+	 	}
 	 	this.Rotate = function(dRX,dRY,dRZ){
 	 		transforms.Rotate(dRX,dRY,dRZ);
 	 		render();
@@ -127,12 +131,26 @@ window.three = function(id,xWid,yWid,res,noSun) {
 	 		render();
 	 	}
 	 	this.pointToXY = function(x,y){
-	 		var dx  = x - xPos,
-	 			dy =  y - yPos,
+	 		
+	 		var par_pos = ( parent != null)?parent.getPos():null,
+	 			dx  = x -( parent?par_pos.x+xPos:xPos),
+	 			dy =  y -( parent?par_pos.y+yPos:yPos),
 	 			angle = toDegree(Math.atan2(dy,dx));
 	 			//console.log("rot:",angle);
 	 			transforms.setRot(0,0,angle);
 	 			render();
+	 	}
+	 	this.domNode = domNode;
+	 	this.appendChild = function ( css3dObject ){
+	 		domNode.appendChild(css3dObject.domNode);
+	 		css3dObject.registerParent(this);
+	 	}
+	 	this.getPos = function(){
+	 		var par_pos = ( parent != null)?parent.getPos():null;
+	 		return ({
+	 			x:( parent?par_pos.x+xPos:xPos),
+	 			y:( parent?par_pos.y+yPos:yPos)
+	 		});
 	 	}
 	 	render();
 	};
