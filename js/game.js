@@ -11,7 +11,10 @@ window.onload = function() {
 	var enviro = new three('war',1200,600,50);
 	enviro.createMap('sand');
 
-	var player = new enviro.create3dObject(),
+	var player ={ 
+			body:(new enviro.create3dObject()),
+			legs:(new enviro.create3dObject())
+		},
 	objects = [],
 	map     = [], // Map is an array
 	waypoints = [],
@@ -28,6 +31,9 @@ window.onload = function() {
 		"DOWNARROW":39,
 		"RIGHTARROW":40
 	};
+	// Add legs to body
+	player.legs.appendChild(player.body);
+	player.body.setPos(25,25);
 	function makeAction(name) {
 		actions[name] = {
 			active:false,
@@ -130,18 +136,18 @@ window.onload = function() {
 		if( actions.shoot.active ) {
 		}
 		if( actions.walk_forward.active ) {
-			player.move(0,-10);
+			player.legs.move(0,-10);
 		}
 		if( actions.walk_backward.active) {
-			player.move(0,10);
+			player.legs.move(0,10);
 		}
 		if( actions.strafe_left.active ) {
-			player.move(-10);
+			player.legs.move(-10);
 		}
 		if( actions.strafe_right.active) {
-			player.move(10);
+			player.legs.move(10);
 		}
-		player.pointToXY(actions.mouseX,actions.mouseY);
+		player.body.pointToXY(actions.mouseX,actions.mouseY);
 		
 		window.requestAnimationFrame( GameLoop );
 	};
