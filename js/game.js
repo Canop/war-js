@@ -112,9 +112,7 @@ window.onload = function() {
 
 	["shoot","secondary","walk_forward","walk_backward","strafe_left","strafe_right","activate","reload","primary","sidearm","meelee","crouch","dash",
 	"jump","pause"
-	].forEach( function(act) {
-		makeAction(act);
-	});
+	].forEach(makeAction);
 	console.log(actions);
 	bindMouse(0,"shoot");
 	bindMouse(2,"secondary");
